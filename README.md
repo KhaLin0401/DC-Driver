@@ -1,52 +1,45 @@
-# 🔋 STM32 Power Management System
+# 🔋 Dual Brushed DC Motor Driver
 
 ## 📌 Project Overview
-This is a smart power management module using STM32 as the central controller, capable of monitoring and controlling power outputs (12V, 5V, 3.3V), and communicating with:
-- Daly BMS module
-- SK60x solar charger
-- INA219 current/voltage sensors
-- AT24C256 EEPROM for logging
-- Radxa SBC via Modbus RTU
-
----
-## ⚙️ Hardware Components
-
-| Component      | Description                          |
-|----------------|--------------------------------------|
-| STM32F103C8T6  | Main MCU running FreeRTOS           |
-| DalyBMS        | Manages Li-ion battery pack           |
-| SK60x          | Solar charging module                 |
-| INA219 x3      | Monitors voltage/current at outputs   |
-| AT24C256       | EEPROM for historical data logging    |
-| Radxa          | Reads data via RS485/Modbus           |
-| Relay x3       | Controls 12V, 5V, and 3.3V outputs     |
+This is a dual brushed DC motor driver module. The design is suitable for embedded systems and industrial automation applications that require robust and efficient motor control with up to 60W per channel.
+- Dual independant H-Bridge 
+- ACS712 current sensors
+- AT24CXX EEPROM for logging
 
 ---
 
 ## 📐 System Architecture
 
-![System Architecture](./Docs/power_manage_flow.png)
+![System Architecture](./Docs/SDK.png)
 
----
-## 🧷 Pinout Used
-
-![Pinout Used](./Docs/pin_used.png)
 ---
 ## 🧰 Main Features
 
-- ✅ Read voltage, current, SoC from DalyBMS
-- ✅ Read charging voltage from SK60x
-- ✅ Log data to AT24C256 EEPROM
-- ✅ Monitor output power lines with INA219
-- ✅ Control relays for 12V/5V/3.3V outputs
-- ✅ Provide Modbus RTU interface for Radxa SBC
+- ✅ Supports control of two independent brushed DC motors
 
+- ✅ Supply voltage: 12V or 24V nominal
+
+- ✅ Output current: up to 5A peak per motor, 3A continuous
+
+- ✅ Full H-Bridge configuration for each motor
+
+- ✅ PWM speed control with switching frequency up to 100kHz
+
+- ✅ Direction control via digital logic inputs
+
+
+Protection features:
+
+- ✅ Current monitoring
+
+- ✅ Flyback diode protection for inductive switching
+
+- ✅ Opto-isolated control interface using 6N136
 ---
 ## 🔌 Modbus RTU Interface
 
-- **Slave ID:** `0x01`
+- **Slave ID:** `0x03`
 - **Baudrate:** `9600bps`, `8N1`
-- **Function Codes:** `0x03`, `0x06`, `0x10`
-- See register mapping in [`Docs/modbus_register_map.md`](./Docs/modbus_register_map.md)
+
 
 ---
