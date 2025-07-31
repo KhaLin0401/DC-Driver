@@ -49,6 +49,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -57,6 +59,40 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LED4_Pin GPIO_PIN_13
+#define LED4_GPIO_Port GPIOC
+#define LED3_Pin GPIO_PIN_14
+#define LED3_GPIO_Port GPIOC
+#define LED2_Pin GPIO_PIN_15
+#define LED2_GPIO_Port GPIOC
+#define CUR_SENS_Pin GPIO_PIN_0
+#define CUR_SENS_GPIO_Port GPIOA
+#define LED1_Pin GPIO_PIN_1
+#define LED1_GPIO_Port GPIOA
+#define DIR2_Pin GPIO_PIN_4
+#define DIR2_GPIO_Port GPIOA
+#define IN1_Pin GPIO_PIN_5
+#define IN1_GPIO_Port GPIOA
+#define IN2_Pin GPIO_PIN_6
+#define IN2_GPIO_Port GPIOA
+#define IN3_Pin GPIO_PIN_7
+#define IN3_GPIO_Port GPIOA
+#define PWM1_Pin GPIO_PIN_0
+#define PWM1_GPIO_Port GPIOB
+#define DIR1_Pin GPIO_PIN_1
+#define DIR1_GPIO_Port GPIOB
+#define IN4_Pin GPIO_PIN_10
+#define IN4_GPIO_Port GPIOB
+#define DIR4_Pin GPIO_PIN_12
+#define DIR4_GPIO_Port GPIOB
+#define PWM3_Pin GPIO_PIN_8
+#define PWM3_GPIO_Port GPIOA
+#define DIR3_Pin GPIO_PIN_9
+#define DIR3_GPIO_Port GPIOA
+#define OUT2_Pin GPIO_PIN_3
+#define OUT2_GPIO_Port GPIOB
+#define OUT1_Pin GPIO_PIN_4
+#define OUT1_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
