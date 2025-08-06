@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "modbus.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,8 +44,10 @@
 I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* Definitions for defaultTask */
@@ -85,8 +87,10 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_TIM2_Init(void);
 void StartDefaultTask(void *argument);
 void StartTask02(void *argument);
 void StartTask03(void *argument);
@@ -132,8 +136,10 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
+  MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -290,7 +296,7 @@ static void MX_TIM1_Init(void)
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_OC_Init(&htim1) != HAL_OK)
+  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
   }
@@ -300,14 +306,14 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_TIMING;
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_OC_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
   }
@@ -326,6 +332,51 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 2 */
   HAL_TIM_MspPostInit(&htim1);
+
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 71;  // FIXED: 72MHz/72 = 1MHz timer clock
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 4000;   // FIXED: 4ms timeout for Modbus (3.5 char time @ 9600 baud)
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
 
 }
 
@@ -375,6 +426,39 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 9600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
@@ -548,9 +632,121 @@ void StartTask03(void *argument)
 void StartTask04(void *argument)
 {
   /* USER CODE BEGIN StartTask04 */
+  
+  // Debug: Blink LED1 ngay khi task bắt đầu
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  osDelay(100);
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  
+  // Debug: Blink LED2 để test GPIO
+  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+  osDelay(100);
+  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+  
+  // Debug: Blink LED3 để test GPIO
+  HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+  osDelay(100);
+  HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+  
+  // Debug: Blink LED4 để test GPIO
+  HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
+  osDelay(100);
+  HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
+  
+  // Initialize Modbus
+  modbus_init();
+  
+  // Debug: Blink LED1 sau khi modbus_init() thành công
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  osDelay(300);
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  
+  // Debug: LED indicators for modbus status
+  uint32_t modbus_heartbeat = 0;
+  uint32_t test_counter = 0;
+  uint32_t uart_receive_count = 0;
+  
+  // Set some test data in registers for debugging
+  modbus_write_register(0x0000, 50);   // Motor 1 Target Speed = 50%
+  modbus_write_register(0x0001, 45);   // Motor 1 Current Speed = 45%
+  modbus_write_register(0x0002, 1);    // Motor 1 Direction = Forward
+  modbus_write_register(0x0003, 100);  // Motor 1 Kp = 1.00
+  modbus_write_register(0x0004, 50);   // Motor 1 Ki = 0.50
+  modbus_write_register(0x0005, 25);   // Motor 1 Kd = 0.25
+  
+  modbus_write_register(0x0010, 60);   // Motor 2 Target Speed = 60%
+  modbus_write_register(0x0011, 55);   // Motor 2 Current Speed = 55%
+  modbus_write_register(0x0012, 0);    // Motor 2 Direction = Reverse
+  modbus_write_register(0x0013, 120);  // Motor 2 Kp = 1.20
+  modbus_write_register(0x0014, 60);   // Motor 2 Ki = 0.60
+  modbus_write_register(0x0015, 30);   // Motor 2 Kd = 0.30
+  
+  // System registers - FIXED: Updated to correct addresses
+  modbus_write_register(0x0020, 0x1234); // Device ID
+  modbus_write_register(0x0021, 0x0100); // Firmware Version 1.0
+  modbus_write_register(0x0022, 0x0001); // System Status = OK
+  modbus_write_register(0x0023, 0x0000); // Error Code = No Error
+  
+  // Debug: Blink LED1 to show modbus is initialized
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  osDelay(500);
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  
   /* Infinite loop */
   for(;;)
   {
+    // Debug: Heartbeat LED every 1 second
+    modbus_heartbeat++;
+    if (modbus_heartbeat >= 1000) { // 1000ms = 1 second
+      HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin); // Toggle LED2 for heartbeat
+      modbus_heartbeat = 0;
+      
+      // Update test data every second
+      test_counter++;
+      modbus_write_register(0x0001, 45 + (test_counter % 10)); // Simulate motor speed change
+      modbus_write_register(0x0011, 55 + (test_counter % 15)); // Simulate motor 2 speed change
+      
+      // Update system status
+      modbus_write_register(0x0022, 0x0001 | (test_counter & 0x000F)); // FIXED: Correct address
+      
+      // Debug: Print register values every 5 seconds
+      if (test_counter % 5 == 0) {
+        // Read some registers to verify they're working
+        uint16_t m1_target = modbus_read_register(0x0000);
+        uint16_t m1_current = modbus_read_register(0x0001);
+        uint16_t system_status = modbus_read_register(0x0022); // FIXED: Correct address
+        
+        // If registers are readable, blink LED3 quickly
+        if (m1_target == 50 && m1_current > 0) {
+          HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+          osDelay(50);
+          HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+        }
+      }
+    }
+    
+    // Debug: Check if any modbus data was received (simple check)
+    static uint16_t last_m1_target = 0;
+    static uint16_t last_m2_target = 0;
+    
+    uint16_t current_m1_target = modbus_read_register(0x0000);
+    uint16_t current_m2_target = modbus_read_register(0x0010);
+    
+    // If motor targets changed, blink LED3 to show modbus write worked
+    if (current_m1_target != last_m1_target) {
+      HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+      osDelay(100);
+      HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+      last_m1_target = current_m1_target;
+    }
+    
+    if (current_m2_target != last_m2_target) {
+      HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
+      osDelay(100);
+      HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
+      last_m2_target = current_m2_target;
+    }
+    
     osDelay(1);
   }
   /* USER CODE END StartTask04 */

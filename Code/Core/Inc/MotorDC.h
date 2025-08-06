@@ -4,16 +4,15 @@
 #include "stdint.h"
 
 
-typedef struct {
-    float _kp;
-    float _ki;
-    float _kd;
-    float _accelerationLimit;       /**< Gioi han tang toc (% cua _maxDuty) */
-    float _decelerationLimit;
-} PID_Gains_t;
 
-typedef struct {                    /**< He so D cua PID */
-	float _targetSpeed;             /**< Toc do muc tieu (0-100%) */
+
+typedef struct {
+	float _kp;
+	float _ki;
+	float _kd;
+	float _accelerationLimit;       /**< Gioi han tang toc (% cua _maxDuty) */
+	float _decelerationLimit;/**< He so D cua PID */
+	float _targetSpee1;             /**< Toc do muc tieu (0-100%) */
 	float _currentSpeed;            /**< Toc do hien tai (0-100%) */
 
 	/* Bien noi bo cho PID */
@@ -22,7 +21,6 @@ typedef struct {                    /**< He so D cua PID */
 	float _integral;                /**< Gia tri tich phan */
 	float _output;                  /**< Gia tri dau ra dieu khien (0-100%) */
 
-	PID_Gains_t pid_gains;
 	/* Cam bien */
 	float _distanceSensorValue;     /**< Gia tri khoang cach (cm), duoc cap nhat tu ben ngoai */
 
@@ -33,10 +31,13 @@ typedef struct {                    /**< He so D cua PID */
 	float _maxDuty;                 /**< Gia tri PWM toi da */
 
 	/* Trang thai he thong */
-	int _direction;      /**< Huong quay */
-	int _status;            /**< Trang thai dong co */
+	int _direction;
+	/**< Huong quay */
+	int _status;
+	/**< Trang thai dong co */
 
-	/* Con tro ham Update */
+
+
 	void (*Update)(struct _MotorDC *motor);
 } MotorControl_t;
 
@@ -72,4 +73,17 @@ typedef struct {
 extern DriverSystem_t driver;
 extern ModbusRegisterMap_t modbus_map;
 
+void _motorInit();
+void _setRuningMode(ModbusRegisterMap_t *modbus_map, DriverSystem_t *driver);
+void _setEnableMotor(DriverSystem_t *driver);
+void _setDisableMotor(DriverSystem_t *driver);
+void _setOnOffMode(ModbusRegisterMap_t *modbus_map, DriverSystem_t *driver);
+void _setLinearMode(ModbusRegisterMap_t *modbus_map, DriverSystem_t *driver);
+void _setPIDMode(ModbusRegisterMap_t *modbus_map, DriverSystem_t *driver);
+
+void _runOnOffMode(DriverSystem_t *driver);
+void _runLinearMode(DriverSystem_t *driver);
+void _runPIDMode(DriverSystem_t *driver);
+
+void _updateMotor(DriverSystem_t *driver);
 #endif

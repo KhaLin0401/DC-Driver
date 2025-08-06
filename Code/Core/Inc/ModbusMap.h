@@ -10,8 +10,39 @@
 
 #include <stdint.h>
 
+// FreeModbus type definitions for compatibility
+#ifndef UCHAR
+#define UCHAR uint8_t
+#endif
+
+#ifndef USHORT
+#define USHORT uint16_t
+#endif
+
+#ifndef ULONG
+#define ULONG uint32_t
+#endif
+
+// FreeModbus error codes
 typedef enum {
-    // Motor 1 Registers
+    MB_ENOERR = 0x00,
+    MB_ENOREG = 0x02,
+    MB_EINVAL = 0x04,
+    MB_EPORTERR = 0x06,
+    MB_ENORES = 0x08,
+    MB_EIO = 0x0A,
+    MB_EILLSTATE = 0x0B,
+    MB_ETIMEDOUT = 0x0E
+} eMBErrorCode;
+
+// FreeModbus register modes
+typedef enum {
+    MB_REG_READ = 0,
+    MB_REG_WRITE = 1
+} eMBRegisterMode;
+
+typedef enum {
+    // Motor 1 Registers (0x0000 - 0x000D)
     REG_M1_CONTROL_MODE = 0x0000,
     REG_M1_ONOFF_ENABLE,
     REG_M1_LINEAR_ENABLE,
@@ -26,7 +57,7 @@ typedef enum {
     REG_M1_STATUS_WORD,
     REG_M1_ERROR_CODE,
 
-    // Motor 2 Registers
+    // Motor 2 Registers (0x0010 - 0x001D)
     REG_M2_CONTROL_MODE = 0x0010,
     REG_M2_ONOFF_ENABLE,
     REG_M2_LINEAR_ENABLE,
@@ -41,8 +72,8 @@ typedef enum {
     REG_M2_STATUS_WORD,
     REG_M2_ERROR_CODE,
 
-    // System Registers
-    REG_DEVICE_ID = 0x00F0,
+    // System Registers (0x0020 - 0x0026) - FIXED: Moved to avoid conflicts
+    REG_DEVICE_ID = 0x0020,
     REG_FIRMWARE_VERSION,
     REG_SYSTEM_STATUS,
     REG_SYSTEM_ERROR,
@@ -53,9 +84,9 @@ typedef enum {
     TOTAL_REG_COUNT  // Use this to size the holding register array
 } ModbusRegisterMap_t;
 
-// Struct for holding register values (example)
+// Struct for holding register values - FreeModbus compatible
 typedef struct {
-    // Motor 1
+    // Motor 1 (0x0000 - 0x000D)
     uint16_t m1_mode;
     uint16_t m1_onoff_en;
     uint16_t m1_linear_en;
@@ -70,7 +101,7 @@ typedef struct {
     uint16_t m1_status;
     uint16_t m1_error;
 
-    // Motor 2
+    // Motor 2 (0x0010 - 0x001D)
     uint16_t m2_mode;
     uint16_t m2_onoff_en;
     uint16_t m2_linear_en;
@@ -85,7 +116,7 @@ typedef struct {
     uint16_t m2_status;
     uint16_t m2_error;
 
-    // System
+    // System (0x0020 - 0x0026)
     uint16_t device_id;
     uint16_t firmware_ver;
     uint16_t system_status;
@@ -93,11 +124,13 @@ typedef struct {
     uint16_t reset_error_cmd;
     uint16_t config_baudrate;
     uint16_t config_parity;
-} ModbusData_t;
+} tModbusRegisters;
 
 // Global instance
-extern ModbusData_t g_modbus_data;
+extern tModbusRegisters g_modbus_data;
 
-#endif // __MODBUS_REGISTER_MAP_H
+// FreeModbus callback function declaration
+eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
+                              USHORT usNRegs, eMBRegisterMode eMode);
 
 #endif /* INC_MODBUSMAP_H_ */

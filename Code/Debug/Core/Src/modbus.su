@@ -1,0 +1,9 @@
+../Core/Src/modbus.c:24:6:modbus_init	8	static
+../Core/Src/modbus.c:29:6:modbus_receive_byte	16	static
+../Core/Src/modbus.c:36:6:modbus_on_frame_timeout	8	static
+../Core/Src/modbus.c:43:13:modbus_send_response	24	static
+../Core/Src/modbus.c:50:13:modbus_exception_response	24	static
+../Core/Src/modbus.c:58:10:modbus_read_register	16	static
+../Core/Src/modbus.c:64:6:modbus_write_register	16	static
+../Core/Src/modbus.c:70:13:modbus_validate_register_range	16	static
+../Core/Src/modbus.c:94:13:modbus_process_frame	304	static

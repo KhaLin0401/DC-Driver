@@ -37,37 +37,15 @@ This document defines the Modbus RTU register map used for communication between
 | `0x0021`| Error_Code    | - | Error code    | `uint16` | RO |
 
 
-### 0x0030 - SK60X Data
-| Address | Name | Unit | Description | Data Type | Access |
-|---------|------|------|-------------|-----------|--------|
-| `0x0030–31`| v_set | V | Voltage setpoint | `float` | Read/Write |
-| `0x0032-33`| i_set | A | Current setpoint | `float` | Read/Write |
-| `0x0034–35`| v_out | V | Output voltage | `float` | Read Only |
-| `0x0036–37`| i_out | A | Output current | `float` | Read Only |
-| `0x0038–39`| p_out | W | Output power   | `float` | Read Only |
-| `0x003A–3B`| v_in  | V | Input voltage  | `float` | Read Only |
-| `0x003C–3D`| i_in  | A | Input current  | `float` | Read Only |
-| `0x003E–3F`| temp | °C | Temperature of SK60X | `float` | Read Only |
-| `0x0040` | h_use | h | Time used – hours | `uint8` | Read Only |
-| `0x0041` | m_use | m | Time used – minutes | `uint8` | Read Only |
-| `0x0042` | s_use | s | Time used – seconds | `uint8` | Read Only |
-| `0x0043` | status | | Operational status | `bool` | Read Only |
-| `0x0044` | on_off | | Output ON/OFF state | `bool` | Read/Write |
-| `0x0045` | charge_relay | | 1 = Enable , 0 = Disable | `bool` | Read/Write |
-| `0x0046` | charge_state | | 0 = NOT, 1 = PREPARE, 2 = READY | `bool` | Read/Write |
 
 
 
-### 0x005 - INA219 Sensor Values 
+
+### 0x005 - ACS712 Sensor Value 
 
 | Address | Name | Unit | Description | Data Type | Access    |
 |---------|------|------|-------------|-----------|-----------|
-| `0x0050` | 12V Voltage Output | mV | Voltage of 12V output | `uint8` | Read Only |
-| `0x0051` | 12V Current Output | mA | Current of 12V output | `uint8` | Read Only |
-| `0x0052` | 5V Voltage Output | mV | Voltage of 5V output | `uint8` | Read Only |
-| `0x0053` | 5V Current Output | mA | Current of 5V output | `uint16`  | Read Only |
-| `0x0054` | 3.3V Voltage Output | mV | Voltage of 3.3V output | `uint8`  | Read Only |
-| `0x0055` | 3.3V Current Output | mA | Current of 3.3V output  | `uint8`  | Read Only |
+| `0x0050` | 12V Current Usage | mA | Current of 12V Usage | `uint8` | RO 
 
 ---
 
