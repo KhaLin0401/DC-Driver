@@ -633,64 +633,17 @@ void StartTask04(void *argument)
 {
   /* USER CODE BEGIN StartTask04 */
   
-  // Debug: Blink LED1 ngay khi task bắt đầu
-  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-  osDelay(100);
-  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-  
-  // Debug: Blink LED2 để test GPIO
-  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-  osDelay(100);
-  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-  
-  // Debug: Blink LED3 để test GPIO
-  HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-  osDelay(100);
-  HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-  
-  // Debug: Blink LED4 để test GPIO
-  HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
-  osDelay(100);
-  HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
-  
   // Initialize Modbus
   modbus_init();
-  
-  // Debug: Blink LED1 sau khi modbus_init() thành công
-  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-  osDelay(300);
-  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-  
-  // Debug: LED indicators for modbus status
-  uint32_t modbus_heartbeat = 0;
-  uint32_t test_counter = 0;
-  uint32_t uart_receive_count = 0;
-  
-  // Set some test data in registers for debugging
-  modbus_write_register(0x0000, 50);   // Motor 1 Target Speed = 50%
-  modbus_write_register(0x0001, 45);   // Motor 1 Current Speed = 45%
-  modbus_write_register(0x0002, 1);    // Motor 1 Direction = Forward
-  modbus_write_register(0x0003, 100);  // Motor 1 Kp = 1.00
-  modbus_write_register(0x0004, 50);   // Motor 1 Ki = 0.50
-  modbus_write_register(0x0005, 25);   // Motor 1 Kd = 0.25
-  
-  modbus_write_register(0x0010, 60);   // Motor 2 Target Speed = 60%
-  modbus_write_register(0x0011, 55);   // Motor 2 Current Speed = 55%
-  modbus_write_register(0x0012, 0);    // Motor 2 Direction = Reverse
-  modbus_write_register(0x0013, 120);  // Motor 2 Kp = 1.20
-  modbus_write_register(0x0014, 60);   // Motor 2 Ki = 0.60
-  modbus_write_register(0x0015, 30);   // Motor 2 Kd = 0.30
-  
-  // System registers - FIXED: Updated to correct addresses
-  modbus_write_register(0x0020, 0x1234); // Device ID
-  modbus_write_register(0x0021, 0x0100); // Firmware Version 1.0
-  modbus_write_register(0x0022, 0x0001); // System Status = OK
-  modbus_write_register(0x0023, 0x0000); // Error Code = No Error
   
   // Debug: Blink LED1 to show modbus is initialized
   HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   osDelay(500);
   HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  
+  // Debug: LED indicators for modbus status
+  uint32_t modbus_heartbeat = 0;
+  uint32_t test_counter = 0;
   
   /* Infinite loop */
   for(;;)
@@ -707,14 +660,14 @@ void StartTask04(void *argument)
       modbus_write_register(0x0011, 55 + (test_counter % 15)); // Simulate motor 2 speed change
       
       // Update system status
-      modbus_write_register(0x0022, 0x0001 | (test_counter & 0x000F)); // FIXED: Correct address
+      modbus_write_register(0x0022, 0x0001 | (test_counter & 0x000F)); // Status with counter
       
       // Debug: Print register values every 5 seconds
       if (test_counter % 5 == 0) {
         // Read some registers to verify they're working
         uint16_t m1_target = modbus_read_register(0x0000);
         uint16_t m1_current = modbus_read_register(0x0001);
-        uint16_t system_status = modbus_read_register(0x0022); // FIXED: Correct address
+        uint16_t system_status = modbus_read_register(0x0022);
         
         // If registers are readable, blink LED3 quickly
         if (m1_target == 50 && m1_current > 0) {
